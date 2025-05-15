@@ -1,14 +1,32 @@
 use serde::{Deserialize, Serialize};
 
+use super::{Consignee, GoodsOwnerId, ItemCount, OrderNumber, OrderType, ReferenceNumber};
+
 #[derive(Debug, Clone, Serialize)]
-pub struct CreateOrderRequest {}
+pub struct CreateOrderRequest {
+    /// Your goods owner ID in Inselos Warehouse management system.
+    goods_owner_id: GoodsOwnerId,
+
+    /// The value of this field has to be unique across all orders for the goods owner. If the value
+    /// provided is already taken, the order will be rejected.
+    order_number: OrderNumber,
+
+    /// Custom internal reference number of goods owner.
+    reference_number: ReferenceNumber,
+
+    /// The type of order decides such factors as SLA. Order types are decided between goods owner and us.
+    order_type: OrderType,
+
+    /// The designated recipient of the ordered goods.
+    consignee: Consignee,
+}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct CreateOrderResponse {
-    order_id: String,
+    order_id: Option<String>,
     order_number: String,
-    goods_owner_id: String,
-    order_status: String,
+    goods_owner_id: Option<String>,
+    order_status: OrderStatus,
     custom_object: String,
     goods_owner_order_id: String,
     stockroom: String,
@@ -24,36 +42,13 @@ pub struct OrderLine {
 
     /// The number of articles of the specified article number that should be sent to consignee.
     /// The number must be an integer without decimals and must be greater than 0.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub number_of_items: Option<String>,
-
-    /// The row number of the order line. Must be unique.
-    /// If you do not provide row number, it will be automatically generated.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub row_number: Option<String>,
+    pub number_of_items: ItemCount,
 
     /// Optional comment for the order line.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub comment: Option<String>,
 
-    /// Indicates whether the item should be picked.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub should_be_picked: Option<bool>,
-
-    /// Serial number for the item.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub serial_number: Option<String>,
-
-    /// Total customs value for the line item.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub line_total_customs_value: Option<f64>,
-
-    /// Batch number for the item.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub batch_number: Option<String>,
-
-    /// Customer's article number reference.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    /// Optional article number in the integrating system.
     pub customer_article_number: Option<String>,
 
     /// Special warehouse instructions for this line.
@@ -63,25 +58,7 @@ pub struct OrderLine {
     /// External ID reference.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub external_id: Option<String>,
-
-    /// Minimum days until expiry date.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub min_days_to_expiry_date: Option<i32>,
-
-    /// Maximum days until expiry date.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_days_to_expiry_date: Option<i32>,
-
-    /// Free text fields for additional information.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub line_free_values: Option<LineFreeValues>,
 }
 
-/// Container for free text values associated with an order line.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LineFreeValues {
-    /// Free text field 1.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub free_text1: Option<String>,
-    // Add other free text fields as needed
-}
+pub struct OrderStatus(i32);
