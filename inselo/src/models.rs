@@ -13,6 +13,12 @@ pub struct Credentials {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ClientId(String);
 
+impl From<String> for ClientId {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Token {
     pub token: SecretString,
