@@ -50,7 +50,7 @@ impl InseloClient {
                 let text = response.text().await?;
 
                 let parsed_response = serde_json::from_str::<CreateOrderResponse>(&text)
-                    .map_err(|err| Error::Deserialization(err))?;
+                    .map_err(|err| Error::ParseError(err.to_string()))?;
                 Ok(Some(parsed_response))
             }
             _ => Err(Error::UnexpectedResponseCode(response.status())),

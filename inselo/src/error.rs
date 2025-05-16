@@ -35,9 +35,6 @@ pub enum Error {
     #[error("Response parsing error: {0}")]
     ParseError(String),
 
-    #[error("deserialization failed: {0}")]
-    Deserialization(#[from] serde_json::Error),
-
     #[error("Credential provider error: {0}")]
     Credentials(String),
 
