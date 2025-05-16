@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use super::{Consignee, GoodsOwnerId, ItemCount, OrderNumber, OrderType, ReferenceNumber};
+use super::{common::Consignee, GoodsOwnerId, ItemCount, OrderNumber, ReferenceNumber};
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateOrderRequest {
     /// Your goods owner ID in Inselos Warehouse management system.
     goods_owner_id: GoodsOwnerId,
@@ -22,6 +23,7 @@ pub struct CreateOrderRequest {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateOrderResponse {
     order_id: Option<String>,
     order_number: String,
@@ -34,6 +36,7 @@ pub struct CreateOrderResponse {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OrderLine {
     /// The article number of the article that should be sent to consignee.
     /// The article number must match an article number in the registry of article numbers,
@@ -62,3 +65,14 @@ pub struct OrderLine {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OrderStatus(i32);
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OrderType {
+    code: OrderTypeInner,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum OrderTypeInner {
+    Business,
+}

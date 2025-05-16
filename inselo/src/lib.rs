@@ -5,11 +5,11 @@ pub mod models;
 use std::sync::RwLock;
 
 use chrono::{Duration, Utc};
-use credential_provider::CredentialProvider;
+use credential_provider::{CredentialProvider, Credentials, Token};
 use error::{Error, Result};
 use models::{
+    auth::{AuthTokenRequest, AuthTokenResponse},
     orders::{CreateOrderRequest, CreateOrderResponse},
-    AuthTokenRequest, AuthTokenResponse, Credentials, Token,
 };
 
 pub struct InseloClient<P: CredentialProvider> {
@@ -75,7 +75,6 @@ impl<P: CredentialProvider> InseloClient<P> {
     }
 
     async fn get_auth_token(&self, credentials: &Credentials) -> Result<Token> {
-        // TODO: Call the API
         let response = self
             .client
             .post(format!("{}/auth0-login", &self.base_url))
