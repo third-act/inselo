@@ -10,6 +10,15 @@ pub trait CredentialProvider {
     fn try_fetch_credentials(&self) -> Result<Credentials>;
 }
 
+impl<F> CredentialProvider for F
+where
+    F: Fn() -> Result<Credentials> + Send + Sync + 'static,
+{
+    fn try_fetch_credentials(&self) -> Result<Credentials> {
+        self()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Credentials {
     pub client_id: ClientId,

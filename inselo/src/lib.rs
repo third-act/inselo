@@ -12,21 +12,21 @@ use models::{
     orders::{CreateOrderRequest, CreateOrderResponse},
 };
 
-pub struct InseloClient<P: CredentialProvider> {
+pub struct InseloClient {
     base_url: String,
     client: reqwest::Client,
-    credential_provider: P,
+    credential_provider: Box<dyn CredentialProvider>,
     token: RwLock<Option<Token>>,
 }
 
 // TODO: Builder to customize options/construct your own underlying client
 
-impl<P: CredentialProvider> InseloClient<P> {
-    pub fn new(base_url: String, credential_provider: P) -> Self {
+impl InseloClient {
+    pub fn new<P: CredentialProvider + 'static>(base_url: String, credential_provider: P) -> Self {
         Self {
             base_url,
             client: reqwest::Client::new(),
-            credential_provider,
+            credential_provider: Box::new(credential_provider),
             token: RwLock::new(None),
         }
     }
