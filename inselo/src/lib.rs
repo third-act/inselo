@@ -11,6 +11,7 @@ use models::{
     auth::{AuthTokenRequest, AuthTokenResponse},
     orders::{CreateOrderRequest, CreateOrderResponse},
 };
+use reqwest::header::CONTENT_TYPE;
 
 pub struct InseloClient<P: CredentialProvider> {
     base_url: String,
@@ -41,6 +42,7 @@ impl<P: CredentialProvider> InseloClient<P> {
             .post(format!("{}/api/orders", &self.base_url))
             .bearer_auth(token.expose())
             .json(&payload)
+            .header(CONTENT_TYPE, "application/json")
             .send()
             .await?;
 
