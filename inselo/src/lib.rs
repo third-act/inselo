@@ -11,7 +11,6 @@ use models::{
     auth::{AuthTokenRequest, AuthTokenResponse},
     orders::{CreateOrderRequest, CreateOrderResponse},
 };
-use reqwest::header::CONTENT_TYPE;
 
 pub struct InseloClient<P: CredentialProvider> {
     base_url: String,
@@ -45,13 +44,19 @@ impl<P: CredentialProvider> InseloClient<P> {
             .send()
             .await?;
 
-        println!("response: {:#?}", response);
-
         match response.status() {
             reqwest::StatusCode::OK => Ok(None),
             reqwest::StatusCode::CREATED => {
-                let order_response = response.json().await?;
-                Ok(Some(order_response))
+                let text = response.text().await?;
+
+                let parsed_response =
+                    serde_json::from_str::<CreateOrderResponse>(&text).map_err(|err| {
+                        Error::Deserialization {
+                            source: err,
+                            raw: text.clone(),
+                        }
+                    })?;
+                Ok(Some(parsed_response))
             }
             _ => Err(Error::UnexpectedResponseCode(response.status())),
         }
