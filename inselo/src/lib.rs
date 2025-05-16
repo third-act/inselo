@@ -42,9 +42,10 @@ impl<P: CredentialProvider> InseloClient<P> {
             .post(format!("{}/api/orders", &self.base_url))
             .bearer_auth(token.expose())
             .json(&payload)
-            .header(CONTENT_TYPE, "application/json")
             .send()
             .await?;
+
+        println!("response: {:#?}", response);
 
         match response.status() {
             reqwest::StatusCode::OK => Ok(None),
