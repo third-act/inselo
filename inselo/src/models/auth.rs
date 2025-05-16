@@ -22,8 +22,8 @@ impl From<&Credentials> for AuthTokenRequest {
     }
 }
 
+// NOTE: Is *not* camelCase
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct AuthTokenResponse {
     pub auth_token: String,
     pub scope: String,
