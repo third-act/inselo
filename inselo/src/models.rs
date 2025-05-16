@@ -47,7 +47,7 @@ id_newtype!(
 
 // Almost the same as the ids, but doing this one manually since it's not an id and will probably
 // need validation soon.
-// TODO: Validation: must be > 0.
+// TODO: Validation: must be > 0. Use NonZeroU32?
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ItemCount(u32);
 
