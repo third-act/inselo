@@ -25,6 +25,7 @@ impl From<&Credentials> for AuthTokenRequest {
 // NOTE: Is *not* camelCase
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AuthTokenResponse {
+    #[serde(rename = "access_token")]
     pub auth_token: String,
     pub scope: String,
     #[serde(rename = "expires_in")]
