@@ -69,10 +69,10 @@ pub struct OrderStatus(i32);
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderType {
-    code: OrderTypeInner,
+    pub code: OrderTypeCode,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum OrderTypeInner {
+pub enum OrderTypeCode {
     Business,
 }
