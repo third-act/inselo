@@ -8,18 +8,23 @@ pub struct CreateOrderRequest {
     /// Your goods owner ID in Inselos Warehouse management system.
     pub goods_owner_id: GoodsOwnerId,
 
-    /// The value of this field has to be unique across all orders for the goods owner. If the value
-    /// provided is already taken, the order will be rejected.
+    /// The value of this field has to be unique across all orders for the goods owner. If the
+    /// value provided is already taken, the order will be rejected.
     pub order_number: OrderNumber,
 
     /// Custom internal reference number of goods owner.
     pub reference_number: ReferenceNumber,
 
-    /// The type of order decides such factors as SLA. Order types are decided between goods owner and us.
+    /// The type of order decides such factors as SLA. Order types are decided between goods owner
+    /// and us.
     pub order_type: OrderType,
 
     /// The designated recipient of the ordered goods.
     pub consignee: Consignee,
+
+    /// The order lines decide which goods will be sent to the consignee. There can only be one
+    /// article number per order line.
+    pub order_lines: Vec<OrderLine>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
