@@ -49,13 +49,8 @@ impl InseloClient {
             reqwest::StatusCode::CREATED => {
                 let text = response.text().await?;
 
-                let parsed_response =
-                    serde_json::from_str::<CreateOrderResponse>(&text).map_err(|err| {
-                        Error::Deserialization {
-                            source: err,
-                            raw: text.clone(),
-                        }
-                    })?;
+                let parsed_response = serde_json::from_str::<CreateOrderResponse>(&text)
+                    .map_err(|err| Error::Deserialization(err))?;
                 Ok(Some(parsed_response))
             }
             _ => Err(Error::UnexpectedResponseCode(response.status())),
