@@ -34,7 +34,7 @@ pub struct CreateOrderResponse {
     pub order_number: String,
     pub goods_owner_id: Option<u32>,
     pub order_status: OrderStatus,
-    pub goods_owner_order_id: String,
+    pub goods_owner_order_id: Option<String>,
     pub stockroom: String,
     pub order_lines: Vec<OrderLine>,
 }
