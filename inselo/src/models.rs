@@ -45,12 +45,32 @@ id_newtype!(
     (CustomerNumber, String)
 );
 
-// TODO: Must be > 0, implement validation
+// Almost the same as the ids, but doing this one manually since it's not an id and will probably
+// need validation soon.
+// TODO: Validation: must be > 0.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ItemCount(u32);
+
+impl fmt::Display for ItemCount {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "ItemCount({})", self.0)
+    }
+}
+
+impl ItemCount {
+    pub fn into_inner(self) -> u32 {
+        self.0
+    }
+}
 
 impl From<u32> for ItemCount {
     fn from(value: u32) -> Self {
         Self(value)
+    }
+}
+
+impl AsRef<u32> for ItemCount {
+    fn as_ref(&self) -> &u32 {
+        &self.0
     }
 }
