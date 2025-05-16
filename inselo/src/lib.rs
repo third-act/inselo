@@ -85,7 +85,7 @@ impl<P: CredentialProvider> InseloClient<P> {
     async fn get_auth_token(&self, credentials: &Credentials) -> Result<Token> {
         let response = self
             .client
-            .post(format!("{}/auth0-login", &self.base_url))
+            .post(format!("{}/api/auth0-login", &self.base_url))
             .json::<AuthTokenRequest>(&credentials.into())
             .send()
             .await?;
