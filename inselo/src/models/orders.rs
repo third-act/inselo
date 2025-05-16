@@ -6,33 +6,33 @@ use super::{common::Consignee, GoodsOwnerId, ItemCount, OrderNumber, ReferenceNu
 #[serde(rename_all = "camelCase")]
 pub struct CreateOrderRequest {
     /// Your goods owner ID in Inselos Warehouse management system.
-    goods_owner_id: GoodsOwnerId,
+    pub goods_owner_id: GoodsOwnerId,
 
     /// The value of this field has to be unique across all orders for the goods owner. If the value
     /// provided is already taken, the order will be rejected.
-    order_number: OrderNumber,
+    pub order_number: OrderNumber,
 
     /// Custom internal reference number of goods owner.
-    reference_number: ReferenceNumber,
+    pub reference_number: ReferenceNumber,
 
     /// The type of order decides such factors as SLA. Order types are decided between goods owner and us.
-    order_type: OrderType,
+    pub order_type: OrderType,
 
     /// The designated recipient of the ordered goods.
-    consignee: Consignee,
+    pub consignee: Consignee,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateOrderResponse {
-    order_id: Option<String>,
-    order_number: String,
-    goods_owner_id: Option<String>,
-    order_status: OrderStatus,
-    custom_object: String,
-    goods_owner_order_id: String,
-    stockroom: String,
-    order_lines: Vec<OrderLine>,
+    pub order_id: Option<String>,
+    pub order_number: String,
+    pub goods_owner_id: Option<String>,
+    pub order_status: OrderStatus,
+    pub custom_object: String,
+    pub goods_owner_order_id: String,
+    pub stockroom: String,
+    pub order_lines: Vec<OrderLine>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
