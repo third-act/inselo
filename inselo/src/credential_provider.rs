@@ -7,7 +7,7 @@ use crate::{error::Result, models::ClientId};
 /// Implement this to source your credentials when they're needed. By default the token has a TTL
 /// of 1 hour, so the credentials will be requested at roughtly that rate. If the request for
 /// credentials ever fails, the attempted request will also just fail as well.
-pub trait CredentialProvider {
+pub trait CredentialProvider: Send + Sync {
     fn try_fetch_credentials(&self) -> Result<Credentials>;
 }
 
