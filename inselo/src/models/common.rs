@@ -32,7 +32,7 @@ pub struct Consignee {
     pub country_code: CountryCode,
     pub remark: Option<String>,
     pub door_code: Option<String>,
-    pub advanced: AdvancedCosigneeOptions,
+    pub advanced: Option<AdvancedCosigneeOptions>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
