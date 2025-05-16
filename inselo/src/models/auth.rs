@@ -27,6 +27,7 @@ impl From<&Credentials> for AuthTokenRequest {
 pub struct AuthTokenResponse {
     pub auth_token: String,
     pub scope: String,
+    #[serde(rename = "expires_in")]
     pub expires_in_seconds: u32,
     pub token_type: TokenType,
 }
