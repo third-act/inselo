@@ -40,13 +40,13 @@ pub struct Consignee {
 pub struct AdvancedCosigneeOptions {
     /// This object holds information about SMS notifications for deliveries. If the consignee
     /// should be notified by SMS, you should include that information here.
-    sms_notification: Option<SmsNotificationOptions>,
+    pub sms_notification: Option<SmsNotificationOptions>,
     /// This object holds information about telephone notifications for deliveries. If the
     /// consignee should be notified by telephone, you should include that information here.
-    telephone_notification: Option<TelephoneNotification>,
+    pub telephone_notification: Option<TelephoneNotification>,
     /// This object holds information about email notifications for deliveries. If the consignee
     /// should be notified by email, you should include that information here.
-    email_notification: Option<EmailNotification>,
+    pub email_notification: Option<EmailNotification>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
