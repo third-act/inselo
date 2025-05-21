@@ -32,8 +32,12 @@ pub enum Error {
     #[error("Request building error: {0}")]
     RequestError(String),
 
-    #[error("Response parsing error: {0}")]
-    ParseError(String),
+    #[error("Response parsing error: {message}. Status: {status_code}. Body: {body}")]
+    ParseError {
+        message: String,
+        status_code: StatusCode,
+        body: String,
+    },
 
     #[error("Credential provider error: {0}")]
     Credentials(String),
@@ -80,7 +84,12 @@ impl From<reqwest::Error> for Error {
         }
 
         if err.is_decode() {
-            return Self::ParseError(format!("Failed to decode response: {}", err));
+            let status_code = err.status().unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+            return Self::ParseError {
+                message: format!("Failed to decode response: {}", err),
+                status_code,
+                body: "Response body not captured in From<reqwest::Error> for decode error. Check endpoint logic.".to_string(),
+            };
         }
 
         if err.is_builder() {

@@ -44,14 +44,24 @@ impl InseloClient {
             .send()
             .await?;
 
+        let status = response.status();
+
         match response.status() {
             reqwest::StatusCode::OK => Ok(None),
             reqwest::StatusCode::CREATED => {
-                let text = response.text().await?;
+                let text = response.text().await.map_err(|e| Error::ParseError {
+                    message: format!("Failed to read response text: {}", e),
+                    status_code: status,
+                    body: "Could not read response body".to_string(),
+                })?;
 
-                let parsed_response = serde_json::from_str::<CreateOrderResponse>(&text)
-                    .map_err(|err| Error::ParseError(err.to_string()))?;
-                Ok(Some(parsed_response))
+                serde_json::from_str::<CreateOrderResponse>(&text)
+                    .map_err(|err| Error::ParseError {
+                        message: err.to_string(),
+                        status_code: status,
+                        body: text,
+                    })
+                    .map(Some)
             }
             _ => Err(Error::UnexpectedResponseCode(response.status())),
         }
@@ -85,8 +95,33 @@ impl InseloClient {
             .send()
             .await?;
 
-        let body = response.json::<AuthTokenResponse>().await?;
+        let status = response.status();
 
-        Ok(body.into())
+        if !status.is_success() {
+            let body_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Failed to read error response body".to_string());
+            return Err(Error::ParseError {
+                message: format!("Auth token request failed with status {}", status),
+                status_code: status,
+                body: body_text,
+            });
+        }
+
+        let text = response.text().await.map_err(|e| Error::ParseError {
+            message: format!("Failed to read auth token response text: {}", e),
+            status_code: status,
+            body: "Could not read auth token response body".to_string(),
+        })?;
+
+        let parsed_response =
+            serde_json::from_str::<AuthTokenResponse>(&text).map_err(|err| Error::ParseError {
+                message: format!("Failed to parse AuthTokenResponse: {}", err),
+                status_code: status,
+                body: text,
+            })?;
+
+        Ok(parsed_response.into())
     }
 }
