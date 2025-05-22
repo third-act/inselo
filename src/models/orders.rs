@@ -17,7 +17,10 @@ pub struct CreateOrderRequest {
 
     /// The type of order decides such factors as SLA. Order types are decided between goods owner
     /// and us.
-    pub order_type: OrderType,
+    ///
+    /// NOTE: This is optional, even though the documentation states it isn't!
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order_type: Option<OrderType>,
 
     /// The designated recipient of the ordered goods.
     pub consignee: Consignee,
