@@ -25,13 +25,18 @@ pub struct Consignee {
     pub customer_number: CustomerNumber,
     pub name: String,
     pub address1: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub address2: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub address3: Option<String>,
     pub post_code: String,
     pub city: String,
     pub country_code: CountryCode,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub remark: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub door_code: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub advanced: Option<AdvancedCosigneeOptions>,
 }
 
@@ -40,12 +45,15 @@ pub struct Consignee {
 pub struct AdvancedCosigneeOptions {
     /// This object holds information about SMS notifications for deliveries. If the consignee
     /// should be notified by SMS, you should include that information here.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sms_notification: Option<SmsNotificationOptions>,
     /// This object holds information about telephone notifications for deliveries. If the
     /// consignee should be notified by telephone, you should include that information here.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub telephone_notification: Option<TelephoneNotification>,
     /// This object holds information about email notifications for deliveries. If the consignee
     /// should be notified by email, you should include that information here.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub email_notification: Option<EmailNotification>,
 }
 

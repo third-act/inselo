@@ -30,11 +30,15 @@ pub struct CreateOrderRequest {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateOrderResponse {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub order_id: Option<String>,
     pub order_number: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub goods_owner_id: Option<u32>,
     pub order_status: OrderStatus,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub goods_owner_order_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub stockroom: Option<String>,
     pub order_lines: Vec<OrderLine>,
 }
