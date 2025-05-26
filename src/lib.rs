@@ -6,7 +6,7 @@ use std::sync::RwLock;
 
 use chrono::{Duration, Utc};
 use credential_provider::{CredentialProvider, Credentials, Token};
-use error::{Error, Result};
+use error::{Error, Result, ValidationError};
 use models::{
     auth::{AuthTokenRequest, AuthTokenResponse},
     orders::{CreateOrderRequest, CreateOrderResponse},
@@ -46,24 +46,43 @@ impl InseloClient {
 
         let status = response.status();
 
-        match response.status() {
+        match status {
             reqwest::StatusCode::OK => Ok(None),
             reqwest::StatusCode::CREATED => {
                 let text = response.text().await.map_err(|e| Error::ParseError {
                     message: format!("Failed to read response text: {}", e),
                     status_code: status,
-                    body: "Could not read response body".to_string(),
+                    body: None,
                 })?;
 
                 serde_json::from_str::<CreateOrderResponse>(&text)
                     .map_err(|err| Error::ParseError {
                         message: err.to_string(),
                         status_code: status,
-                        body: text,
+                        body: Some(text),
                     })
                     .map(Some)
             }
-            _ => Err(Error::UnexpectedResponseCode(response.status())),
+            reqwest::StatusCode::BAD_REQUEST | reqwest::StatusCode::UNPROCESSABLE_ENTITY => {
+                let text = response.text().await.map_err(|e| Error::ParseError {
+                    message: format!("Failed to read error response: {}", e),
+                    status_code: status,
+                    body: None,
+                })?;
+
+                if let Ok(validation_error) = serde_json::from_str::<ValidationError>(&text) {
+                    Err(Error::Validation(validation_error))
+                } else {
+                    Err(Error::RequestError(text))
+                }
+            }
+            reqwest::StatusCode::UNAUTHORIZED => Err(Error::Unauthenticated),
+            reqwest::StatusCode::FORBIDDEN => Err(Error::Forbidden),
+            reqwest::StatusCode::NOT_FOUND => Err(Error::NotFound),
+            status if status.is_server_error() => Err(Error::ServerError {
+                status_code: status.as_u16(),
+            }),
+            _ => Err(Error::UnexpectedResponseCode(status)),
         }
     }
 
@@ -105,21 +124,21 @@ impl InseloClient {
             return Err(Error::ParseError {
                 message: format!("Auth token request failed with status {}", status),
                 status_code: status,
-                body: body_text,
+                body: Some(body_text),
             });
         }
 
         let text = response.text().await.map_err(|e| Error::ParseError {
             message: format!("Failed to read auth token response text: {}", e),
             status_code: status,
-            body: "Could not read auth token response body".to_string(),
+            body: None,
         })?;
 
         let parsed_response =
             serde_json::from_str::<AuthTokenResponse>(&text).map_err(|err| Error::ParseError {
                 message: format!("Failed to parse AuthTokenResponse: {}", err),
                 status_code: status,
-                body: text,
+                body: Some(text),
             })?;
 
         Ok(parsed_response.into())

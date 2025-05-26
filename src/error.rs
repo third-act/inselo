@@ -32,11 +32,11 @@ pub enum Error {
     #[error("Request building error: {0}")]
     RequestError(String),
 
-    #[error("Response parsing error: {message}. Status: {status_code}. Body: {body}")]
+    #[error("Response parsing error: {message}. Status: {status_code}. Body: {}", body.as_deref().unwrap_or("<empty>"))]
     ParseError {
         message: String,
         status_code: StatusCode,
-        body: String,
+        body: Option<String>,
     },
 
     #[error("Credential provider error: {0}")]
@@ -50,9 +50,10 @@ pub enum Error {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ValidationError {
-    message: String,
-    errors: HashMap<String, Vec<String>>,
+    error_message: String,
+    error_code: i32,
 }
 
 impl From<reqwest::Error> for Error {
@@ -63,10 +64,13 @@ impl From<reqwest::Error> for Error {
                     401 => return Self::Unauthenticated,
                     403 => return Self::Forbidden,
                     404 => return Self::NotFound,
+                    400 | 422 => {
+                        return Self::RequestError("Bad request".to_string());
+                    }
                     status_code if status_code >= 500 => {
                         return Self::ServerError { status_code };
                     }
-                    _ => {}
+                    _ => return Self::UnexpectedResponseCode(status),
                 }
             }
         }
@@ -74,28 +78,23 @@ impl From<reqwest::Error> for Error {
         if err.is_timeout() {
             return Self::Timeout;
         }
-
         if err.is_connect() {
             return Self::NetworkError(format!("Connection error: {}", err));
         }
-
         if err.is_body() {
             return Self::RequestError(format!("Request body error: {}", err));
         }
-
         if err.is_decode() {
             let status_code = err.status().unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
             return Self::ParseError {
                 message: format!("Failed to decode response: {}", err),
                 status_code,
-                body: "Response body not captured in From<reqwest::Error> for decode error. Check endpoint logic.".to_string(),
+                body: None,
             };
         }
-
         if err.is_builder() {
             return Self::RequestError(format!("Request builder error: {}", err));
         }
-
         if err.is_redirect() {
             return Self::NetworkError(format!("Redirect error: {}", err));
         }
