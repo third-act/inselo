@@ -16,7 +16,7 @@ pub struct CreateOrderRequest {
     /// The desired delivery date of goods to consignee. The date must be a future date.
     /// If no date is provided then it will be calculated based on the SLA of the order type.
     /// Note that if you do not provide a deliveryDate you will have to provide the order type.
-    pub delivery_date: NaiveDate,
+    pub delivery_date: Option<NaiveDate>,
 
     /// Custom internal reference number of goods owner.
     pub reference_number: ReferenceNumber,
