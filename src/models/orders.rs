@@ -69,6 +69,7 @@ pub struct OrderLine {
     pub comment: Option<String>,
 
     /// Optional article number in the integrating system.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub customer_article_number: Option<String>,
 
     /// Special warehouse instructions for this line.
