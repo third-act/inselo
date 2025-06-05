@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
 use super::{common::Consignee, GoodsOwnerId, ItemCount, OrderNumber, ReferenceNumber};
@@ -11,6 +12,11 @@ pub struct CreateOrderRequest {
     /// The value of this field has to be unique across all orders for the goods owner. If the
     /// value provided is already taken, the order will be rejected.
     pub order_number: OrderNumber,
+
+    /// The desired delivery date of goods to consignee. The date must be a future date.
+    /// If no date is provided then it will be calculated based on the SLA of the order type.
+    /// Note that if you do not provide a deliveryDate you will have to provide the order type.
+    pub delivery_date: NaiveDate,
 
     /// Custom internal reference number of goods owner.
     pub reference_number: ReferenceNumber,
