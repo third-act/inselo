@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::CustomerNumber;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub enum CountryCode {
     SE,
     NO,
